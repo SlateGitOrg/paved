@@ -66,7 +66,16 @@ func Render(t *Template, values map[string]any) (*Result, error) {
 	if errs := t.Parameters.Validate(vals); len(errs) > 0 {
 		return nil, &ParamError{Template: t.Name, Errors: errs}
 	}
-	out, err := renderString("output", t.Output, vals)
+	// Optional parameters without a default render as nil (falsy in {{ if }}),
+	// while missingkey=error still catches references to undeclared names.
+	scope := make(map[string]any, len(vals)+len(t.Parameters.Order))
+	for _, name := range t.Parameters.Order {
+		scope[name] = nil
+	}
+	for k, v := range vals {
+		scope[k] = v
+	}
+	out, err := renderString("output", t.Output, scope)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +99,7 @@ func Render(t *Template, values map[string]any) (*Result, error) {
 			return err
 		}
 		rel = filepath.ToSlash(rel)
-		f, keep, err := renderFile(p, rel, d, vals)
+		f, keep, err := renderFile(p, rel, d, scope)
 		if err != nil || !keep {
 			return err
 		}
