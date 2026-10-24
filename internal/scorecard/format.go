@@ -5,6 +5,8 @@ import (
 	"io"
 	"strings"
 	"text/tabwriter"
+
+	"github.com/archit2501/paved/internal/catalog"
 )
 
 // WriteText renders a report as aligned plain-text tables. With details set,
@@ -23,7 +25,7 @@ func WriteText(w io.Writer, rep *Report, details bool) error {
 				failed = append(failed, r.ID)
 			}
 		}
-		fmt.Fprintf(tw, "%s\t%s\t%5.1f\t%s\t%s\n", e.Ref.Short(), dash(e.Owner), e.Score, levelKey(e.Level), dash(strings.Join(failed, ",")))
+		fmt.Fprintf(tw, "%s\t%s\t%5.1f\t%s\t%s\n", e.Ref.Short(), dash(shortRef(e.Owner)), e.Score, levelKey(e.Level), dash(strings.Join(failed, ",")))
 	}
 	if err := tw.Flush(); err != nil {
 		return err
@@ -72,7 +74,7 @@ func WriteRollupText(w io.Writer, rep *Report, rows []TeamRollup) error {
 			directMean = fmt.Sprintf("%.1f", r.Direct.MeanScore)
 		}
 		fmt.Fprintf(tw, "%s%s\t%d\t%s\t%d\t%.1f\t%.1f\t%s\t%s\n",
-			strings.Repeat("  ", r.Depth), r.Team, r.Direct.Entities, directMean,
+			strings.Repeat("  ", r.Depth), shortRef(r.Team), r.Direct.Entities, directMean,
 			r.Total.Entities, r.Total.MeanScore, r.Total.MinScore,
 			levelsString(r.Total.Levels, rep.Levels), topFailing(r.Total.FailingRules, 2))
 	}
@@ -170,6 +172,14 @@ func topFailing(rs []RuleCount, n int) string {
 		parts = append(parts, fmt.Sprintf("%s(%d)", r.ID, r.Count))
 	}
 	return strings.Join(parts, " ")
+}
+
+// shortRef drops the default namespace from a canonical reference string.
+func shortRef(s string) string {
+	if ref, err := catalog.ParseRef(s, "", catalog.DefaultNamespace); err == nil {
+		return ref.Short()
+	}
+	return s
 }
 
 func dash(s string) string {

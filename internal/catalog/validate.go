@@ -96,7 +96,7 @@ func validateEntity(e *Entity) []Diagnostic {
 type refField struct {
 	name        string
 	values      []string
-	defaultKind Kind  // kind assumed when the reference omits it ("" = required)
+	defaultKind Kind // kind assumed when the reference omits it ("" = required)
 	allowed     []Kind
 	rel         RelationType
 }

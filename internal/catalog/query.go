@@ -149,7 +149,8 @@ type Hit struct {
 	Depth int `json:"depth"`
 	// Path is the chain from the query root to Ref (inclusive of both ends).
 	Path []Ref `json:"path"`
-	// Via is the relation used for the last hop: "dependsOn" or "api:<api ref>".
+	// Via is the relation used for the last hop: "dependsOn" or the reference
+	// of the API that links the two components (e.g. "api:default/payments-api").
 	Via string `json:"via"`
 }
 
@@ -174,13 +175,13 @@ func (c *Catalog) neighbours(ref Ref, dir Direction) []step {
 	}
 	for _, api := range c.graph.Targets(ref, consume) {
 		for _, t := range c.graph.Targets(api, provided) {
-			out = append(out, step{to: t, via: "api:" + api.String()})
+			out = append(out, step{to: t, via: api.String()})
 		}
 	}
 	// An API itself: upstream are its consumers, downstream its providers.
 	if ref.Kind == KindAPI {
 		for _, t := range c.graph.Targets(ref, provided) {
-			out = append(out, step{to: t, via: "api:" + ref.String()})
+			out = append(out, step{to: t, via: ref.String()})
 		}
 	}
 	return out

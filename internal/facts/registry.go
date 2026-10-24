@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -79,10 +80,18 @@ func ParseRegistry(data []byte) (*Registry, error) {
 	return r, nil
 }
 
+// goMajorSuffix matches a Go semantic-import-versioning suffix such as "/v2".
+var goMajorSuffix = regexp.MustCompile(`/v[0-9]+$`)
+
 func normalizeName(e Ecosystem, name string) string {
-	if e == EcosystemPyPI {
+	switch e {
+	case EcosystemPyPI:
 		// PEP 503 normalisation: case-insensitive, runs of -_. are equivalent.
 		return strings.NewReplacer("_", "-", ".", "-").Replace(strings.ToLower(name))
+	case EcosystemGo:
+		// example.com/mod/v2 and example.com/mod share one release history, so
+		// "majors behind" can be measured across major-version module paths.
+		return goMajorSuffix.ReplaceAllString(name, "")
 	}
 	return name
 }

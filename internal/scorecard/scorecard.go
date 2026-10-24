@@ -27,8 +27,8 @@ type Rule struct {
 
 // Level is a named maturity tier reached at a minimum score.
 type Level struct {
-	Name     string  `json:"name"`
-	MinScore float64 `json:"minScore"`
+	Name     string  `json:"name" yaml:"name"`
+	MinScore float64 `json:"minScore" yaml:"minScore"`
 }
 
 // Selector restricts which entities a scorecard applies to. Empty lists match all.

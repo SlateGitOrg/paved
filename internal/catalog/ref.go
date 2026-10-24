@@ -92,7 +92,9 @@ type RefError struct {
 	Reason string
 }
 
-func (e *RefError) Error() string { return fmt.Sprintf("invalid entity reference %q: %s", e.Input, e.Reason) }
+func (e *RefError) Error() string {
+	return fmt.Sprintf("invalid entity reference %q: %s", e.Input, e.Reason)
+}
 
 // ParseRef parses "[kind:][namespace/]name". defaultKind is used when the kind
 // is omitted; if it is empty, a kind is required. defaultNamespace is used when
