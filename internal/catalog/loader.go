@@ -7,13 +7,15 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 )
 
 // DefaultDescriptorName is the file name discovered under the catalog root.
 const DefaultDescriptorName = "catalog-info.yaml"
 
-// skipDirs are never descended into during discovery.
-var skipDirs = map[string]bool{".git": true, "node_modules": true, "vendor": true, ".venv": true}
+// skipDirs are never descended into during discovery, in addition to every
+// hidden directory (.git, .paved, .github, ...).
+var skipDirs = map[string]bool{"node_modules": true, "vendor": true}
 
 // LoadOptions configures discovery.
 type LoadOptions struct {
@@ -41,7 +43,7 @@ func Discover(root string, opts LoadOptions) ([]string, error) {
 			return err
 		}
 		if d.IsDir() {
-			if p != root && skipDirs[d.Name()] {
+			if p != root && (skipDirs[d.Name()] || strings.HasPrefix(d.Name(), ".")) {
 				return filepath.SkipDir
 			}
 			return nil
