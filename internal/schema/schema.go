@@ -8,6 +8,7 @@
 package schema
 
 import (
+	"errors"
 	"fmt"
 	"math"
 	"regexp"
@@ -168,6 +169,10 @@ func compile(n *yaml.Node, path string) (*Schema, error) {
 			if !ignoredKeywords[key] {
 				err = fmt.Errorf("unsupported keyword %q", key)
 			}
+		}
+		var nested *CompileError
+		if errors.As(err, &nested) {
+			return nil, nested // already located precisely
 		}
 		if err != nil {
 			return nil, fail(n.Content[i].Line, "%s: %v", key, err)
