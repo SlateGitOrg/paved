@@ -12,6 +12,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/archit2501/paved/internal/scaffold"
 	"github.com/archit2501/paved/internal/workspace"
 )
 
@@ -99,7 +100,11 @@ func (a *app) exitCode(err error) int {
 	}
 	var ue *usageError
 	var fe *findingsError
+	var pe *scaffold.ParamError
 	switch {
+	case errors.As(err, &pe):
+		fmt.Fprintln(a.stderr, "paved:", err)
+		return ExitUsage
 	case errors.As(err, &fe):
 		fmt.Fprintln(a.stderr, "paved:", err)
 		return ExitFindings
