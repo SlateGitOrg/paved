@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"net/http/httptest"
 	"strconv"
 	"sync"
 	"time"
@@ -101,10 +102,28 @@ func (s *Server) Handler() http.Handler {
 	mux.HandleFunc("GET /api/v1/templates/{name}", s.handleTemplate)
 	mux.HandleFunc("POST /api/v1/templates/{name}/dry-run", s.handleDryRun)
 	mux.HandleFunc("POST /api/v1/reload", s.handleReload)
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		writeError(w, http.StatusNotFound, "not_found", "no route for "+r.Method+" "+r.URL.Path, nil)
+	return s.recoverer(s.logRequests(jsonRouteErrors(mux)))
+}
+
+// jsonRouteErrors turns the mux's plain-text 404 and 405 responses into the
+// JSON error envelope, keeping the Allow header for 405.
+func jsonRouteErrors(mux *http.ServeMux) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if _, pattern := mux.Handler(r); pattern != "" {
+			mux.ServeHTTP(w, r)
+			return
+		}
+		probe := httptest.NewRecorder()
+		mux.ServeHTTP(probe, r)
+		if allow := probe.Header().Get("Allow"); allow != "" {
+			w.Header().Set("Allow", allow)
+		}
+		code := "not_found"
+		if probe.Code == http.StatusMethodNotAllowed {
+			code = "method_not_allowed"
+		}
+		writeError(w, probe.Code, code, "no route for "+r.Method+" "+r.URL.Path, nil)
 	})
-	return s.recoverer(s.logRequests(mux))
 }
 
 // apiError is the JSON error envelope.
