@@ -117,13 +117,12 @@ func ParseRef(s string, defaultKind Kind, defaultNamespace string) (Ref, error) 
 	if kind == "" {
 		return Ref{}, &RefError{Input: s, Reason: "kind is required (e.g. component:name)"}
 	}
-	ns := defaultNamespace
-	name := rest
-	if i := strings.Index(rest, "/"); i >= 0 {
-		ns, name = rest[:i], rest[i+1:]
-		if !ValidNamespace(strings.ToLower(ns)) {
-			return Ref{}, &RefError{Input: s, Reason: fmt.Sprintf("invalid namespace %q", ns)}
-		}
+	ns, name, hasNS := strings.Cut(rest, "/")
+	switch {
+	case !hasNS:
+		ns, name = defaultNamespace, rest
+	case !ValidNamespace(strings.ToLower(ns)):
+		return Ref{}, &RefError{Input: s, Reason: fmt.Sprintf("invalid namespace %q", ns)}
 	}
 	if !ValidName(name) {
 		return Ref{}, &RefError{Input: s, Reason: fmt.Sprintf("invalid name %q", name)}

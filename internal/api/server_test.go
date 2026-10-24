@@ -34,7 +34,7 @@ func do(t *testing.T, ts *httptest.Server, method, path, body string) (int, map[
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	raw, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatal(err)
@@ -317,7 +317,7 @@ func TestRecoverer(t *testing.T) {
 	}
 	h := s.recoverer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { panic("boom") }))
 	rec := httptest.NewRecorder()
-	h.ServeHTTP(rec, httptest.NewRequest("GET", "/", nil))
+	h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/", nil))
 	if rec.Code != 500 || !strings.Contains(rec.Body.String(), "internal server error") {
 		t.Fatalf("recover = %d %s", rec.Code, rec.Body.String())
 	}
