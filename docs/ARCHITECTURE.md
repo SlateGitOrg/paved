@@ -108,8 +108,11 @@ skeleton/           files to render
    — only with `force` — updates; on any conflict without force nothing is written.
 4. **CheckDescriptors**: rendered `catalog-info.yaml` files are parsed and built *together with
    the existing catalog*, and only diagnostics located in the new files are returned. This is how
-   a typo'd owner or a name collision is caught at dry-run time. The CLI refuses a real apply when
-   a check is an error.
+   a typo'd owner or a name collision is caught at dry-run time. Entities declared in a descriptor
+   the render is about to overwrite are dropped first, so re-scaffolding an existing service
+   (`--force`) replaces its declaration instead of reporting a self-`duplicate-entity`; when the
+   CLI writes to a `--target` other than the catalog root, `CheckDescriptorsAlongside` keeps
+   every loaded entity. The CLI refuses a real apply when a check is an error.
 
 ### Myers diff
 
