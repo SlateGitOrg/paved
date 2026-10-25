@@ -4,8 +4,8 @@ import (
 	"math"
 	"sort"
 
-	"github.com/archit2501/paved/internal/catalog"
-	"github.com/archit2501/paved/internal/facts"
+	"github.com/SlateGitOrg/paved/internal/catalog"
+	"github.com/SlateGitOrg/paved/internal/facts"
 )
 
 // RuleResult is the outcome of one rule for one entity.

@@ -10,10 +10,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/archit2501/paved/internal/catalog"
-	"github.com/archit2501/paved/internal/facts"
-	"github.com/archit2501/paved/internal/scaffold"
-	"github.com/archit2501/paved/internal/scorecard"
+	"github.com/SlateGitOrg/paved/internal/catalog"
+	"github.com/SlateGitOrg/paved/internal/facts"
+	"github.com/SlateGitOrg/paved/internal/scaffold"
+	"github.com/SlateGitOrg/paved/internal/scorecard"
 	"go.yaml.in/yaml/v3"
 )
 

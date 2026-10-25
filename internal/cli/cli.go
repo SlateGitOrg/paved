@@ -12,8 +12,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/archit2501/paved/internal/scaffold"
-	"github.com/archit2501/paved/internal/workspace"
+	"github.com/SlateGitOrg/paved/internal/scaffold"
+	"github.com/SlateGitOrg/paved/internal/workspace"
 )
 
 // Version is the CLI version, overridable at link time.

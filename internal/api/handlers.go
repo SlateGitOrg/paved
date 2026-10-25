@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/archit2501/paved/internal/catalog"
-	"github.com/archit2501/paved/internal/scaffold"
-	"github.com/archit2501/paved/internal/schema"
-	"github.com/archit2501/paved/internal/scorecard"
+	"github.com/SlateGitOrg/paved/internal/catalog"
+	"github.com/SlateGitOrg/paved/internal/scaffold"
+	"github.com/SlateGitOrg/paved/internal/schema"
+	"github.com/SlateGitOrg/paved/internal/scorecard"
 )
 
 // maxBodyBytes bounds request bodies (template parameters are small).

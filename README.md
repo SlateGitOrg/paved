@@ -9,14 +9,14 @@ dependency-light binary that reads the same `catalog-info.yaml` files Backstage 
 answer *who owns X*, *what breaks if Y goes down*, *does this new service meet the bar* and
 *which team needs help* from a laptop or a CI job, offline.
 
-It is for platform engineers who want those answers in a pipeline, and for anyone curious how
-the pieces of an IDP fit together.
+It is for platform engineers who want those answers in a pipeline.
 
-> Status: a portfolio project. It has not been used in production by anyone. Everything in the
-> fixture monorepo (teams, services, package names, registry dates) is invented; see
-> [DATA.md](DATA.md).
+[![ci](https://github.com/SlateGitOrg/paved/actions/workflows/ci.yml/badge.svg)](https://github.com/SlateGitOrg/paved/actions/workflows/ci.yml)
 
-## What it does
+> Status: not yet used against a real organisation's catalog. Everything in the fixture monorepo
+> (teams, services, package names, registry dates) is invented; see [DATA.md](DATA.md).
+
+## Features
 
 | Area | Capability |
 |---|---|
@@ -234,8 +234,19 @@ parsing (`make fuzz`); and an integration test that renders the Go template and 
   gateway. No pagination.
 - **Scale is laptop-scale.** Benchmarks above go to ~2k entities; nothing has been measured on a
   real organisation's catalog.
-- CI (`.github/workflows/ci.yml`) mirrors `make check` and `make demo` but has not been executed,
-  because the repository has not been pushed.
+
+## Project layout
+
+```text
+cmd/paved/            entry point
+internal/catalog      model, parser, validation, graph, queries, orphans, export
+internal/scaffold     templates, render, plan/apply     internal/textdiff  Myers diff
+internal/facts        repo facts, manifests, registry   internal/version   version precedence
+internal/scorecard    rule DSL, evaluation, rollup      internal/schema    JSON Schema subset
+internal/workspace    root + config wiring              internal/api, cli  REST API and commands
+fixtures/             acme-monorepo sample catalog      scripts/           demo and coverage gate
+docs/                 architecture notes                DECISIONS.md       design rulings
+```
 
 ## Roadmap
 

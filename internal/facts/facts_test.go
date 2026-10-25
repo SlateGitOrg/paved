@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/archit2501/paved/internal/catalog"
+	"github.com/SlateGitOrg/paved/internal/catalog"
 )
 
 const fixtureRoot = "../../fixtures/acme-monorepo"

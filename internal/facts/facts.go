@@ -14,7 +14,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/archit2501/paved/internal/catalog"
+	"github.com/SlateGitOrg/paved/internal/catalog"
 )
 
 // Facts maps a dotted fact name to its value: bool, float64, string or []string.

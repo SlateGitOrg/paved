@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/archit2501/paved/internal/version"
+	"github.com/SlateGitOrg/paved/internal/version"
 	"go.yaml.in/yaml/v3"
 )
 

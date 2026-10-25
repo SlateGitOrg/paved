@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/archit2501/paved/internal/textdiff"
+	"github.com/SlateGitOrg/paved/internal/textdiff"
 )
 
 // Action is what applying a change would do to one file.

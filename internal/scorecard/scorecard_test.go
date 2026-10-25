@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/archit2501/paved/internal/catalog"
-	"github.com/archit2501/paved/internal/facts"
+	"github.com/SlateGitOrg/paved/internal/catalog"
+	"github.com/SlateGitOrg/paved/internal/facts"
 	"go.yaml.in/yaml/v3"
 )
 

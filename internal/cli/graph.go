@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/archit2501/paved/internal/catalog"
+	"github.com/SlateGitOrg/paved/internal/catalog"
 )
 
 func graphCommands() []command {

@@ -1,4 +1,4 @@
-module github.com/archit2501/paved
+module github.com/SlateGitOrg/paved
 
 go 1.24
 

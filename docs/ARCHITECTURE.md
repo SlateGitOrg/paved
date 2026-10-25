@@ -1,6 +1,6 @@
 # Architecture
 
-paved is a single Go module (`github.com/archit2501/paved`) with one binary, `cmd/paved`. All
+paved is a single Go module (`github.com/SlateGitOrg/paved`) with one binary, `cmd/paved`. All
 logic lives in `internal/` packages with one-way dependencies:
 
 ```mermaid

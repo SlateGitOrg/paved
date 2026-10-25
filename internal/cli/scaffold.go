@@ -8,8 +8,8 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/archit2501/paved/internal/catalog"
-	"github.com/archit2501/paved/internal/scaffold"
+	"github.com/SlateGitOrg/paved/internal/catalog"
+	"github.com/SlateGitOrg/paved/internal/scaffold"
 	"go.yaml.in/yaml/v3"
 )
 

@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/archit2501/paved/internal/schema"
+	"github.com/SlateGitOrg/paved/internal/schema"
 	"go.yaml.in/yaml/v3"
 )
 

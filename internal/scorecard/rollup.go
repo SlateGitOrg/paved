@@ -3,7 +3,7 @@ package scorecard
 import (
 	"sort"
 
-	"github.com/archit2501/paved/internal/catalog"
+	"github.com/SlateGitOrg/paved/internal/catalog"
 )
 
 // Unowned is the rollup bucket for entities without an effective owner.

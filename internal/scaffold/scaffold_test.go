@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/archit2501/paved/internal/catalog"
+	"github.com/SlateGitOrg/paved/internal/catalog"
 )
 
 var update = flag.Bool("update", false, "rewrite golden files")

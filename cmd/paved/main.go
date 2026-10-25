@@ -5,7 +5,7 @@ package main
 import (
 	"os"
 
-	"github.com/archit2501/paved/internal/cli"
+	"github.com/SlateGitOrg/paved/internal/cli"
 )
 
 func main() {

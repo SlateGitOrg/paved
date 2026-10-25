@@ -11,8 +11,8 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/archit2501/paved/internal/api"
-	"github.com/archit2501/paved/internal/scorecard"
+	"github.com/SlateGitOrg/paved/internal/api"
+	"github.com/SlateGitOrg/paved/internal/scorecard"
 )
 
 func scoreCommands() []command {

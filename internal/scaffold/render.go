@@ -10,8 +10,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/archit2501/paved/internal/catalog"
-	"github.com/archit2501/paved/internal/schema"
+	"github.com/SlateGitOrg/paved/internal/catalog"
+	"github.com/SlateGitOrg/paved/internal/schema"
 )
 
 // TemplateSuffix marks skeleton files whose content is rendered; the suffix is

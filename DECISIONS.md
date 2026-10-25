@@ -1,11 +1,11 @@
 # Decisions
 
-Rulings made while building paved without a product owner to ask. Format:
+Design rulings behind paved. Format:
 `Ruling: <what> — <why> — <cost if wrong>`.
 
 ## Catalog
 
-- Ruling: Support exactly Component, API, System, Group, Resource; any other kind is an `unsupported-kind` error and the document is skipped — matches the brief's subset and keeps reference resolution total — Catalogs that use `User`/`Domain`/`Location` get errors and need those kinds added.
+- Ruling: Support exactly Component, API, System, Group, Resource; any other kind is an `unsupported-kind` error and the document is skipped — matches the supported subset and keeps reference resolution total — Catalogs that use `User`/`Domain`/`Location` get errors and need those kinds added.
 - Ruling: Owners must be Groups; `user:` owners are rejected as an unsupported kind — no User kind exists to resolve against, and team ownership is what scorecard rollups need — Orgs that assign individuals as owners would see validation errors.
 - Ruling: `dependsOn` references must state their kind (`component:`/`resource:`) — same rule as Backstage; a bare name is ambiguous between the two allowed kinds — Slightly more verbose descriptors.
 - Ruling: Names/namespaces are compared case-insensitively and stored lower-cased — Backstage semantics — Display of mixed-case names in refs is lower-cased.

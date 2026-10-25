@@ -13,9 +13,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/archit2501/paved/internal/catalog"
-	"github.com/archit2501/paved/internal/scorecard"
-	"github.com/archit2501/paved/internal/workspace"
+	"github.com/SlateGitOrg/paved/internal/catalog"
+	"github.com/SlateGitOrg/paved/internal/scorecard"
+	"github.com/SlateGitOrg/paved/internal/workspace"
 )
 
 // snapshot is an immutable, fully evaluated view of the workspace. Requests
