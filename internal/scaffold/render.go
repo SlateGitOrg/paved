@@ -192,7 +192,25 @@ func (r *Result) TargetPath(f File) string { return path.Join(r.OutputDir, f.Pat
 // new entities together with an existing catalog (may be nil), so a dry run
 // shows whether, e.g., the chosen owner actually exists. Only diagnostics about
 // the rendered files are returned.
+//
+// It assumes the files are written into the existing catalog's root (the
+// default target), so entities currently declared in a descriptor the result
+// is about to overwrite are dropped first: re-scaffolding (or --force
+// updating) an existing service replaces its declaration rather than
+// duplicating it. Use CheckDescriptorsAlongside when writing elsewhere.
 func (r *Result) CheckDescriptors(existing *catalog.Catalog) []catalog.Diagnostic {
+	return r.checkDescriptors(existing, true)
+}
+
+// CheckDescriptorsAlongside validates the rendered descriptors against an
+// existing catalog whose files they do not replace (e.g. a different
+// --target directory): every existing entity is kept, so a name clash is a
+// duplicate even when the relative descriptor path matches.
+func (r *Result) CheckDescriptorsAlongside(existing *catalog.Catalog) []catalog.Diagnostic {
+	return r.checkDescriptors(existing, false)
+}
+
+func (r *Result) checkDescriptors(existing *catalog.Catalog, replaces bool) []catalog.Diagnostic {
 	var (
 		newEntities []*catalog.Entity
 		diags       []catalog.Diagnostic
@@ -213,7 +231,12 @@ func (r *Result) CheckDescriptors(existing *catalog.Catalog) []catalog.Diagnosti
 	}
 	var all []*catalog.Entity
 	if existing != nil {
-		all = append(all, existing.Entities()...)
+		for _, e := range existing.Entities() {
+			if replaces && newFiles[e.Source.File] {
+				continue // this declaration is overwritten by the rendered file
+			}
+			all = append(all, e)
+		}
 	}
 	all = append(all, newEntities...)
 	var out []catalog.Diagnostic

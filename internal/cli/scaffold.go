@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"text/tabwriter"
 
@@ -117,7 +118,14 @@ func runScaffold(a *app, args []string) error {
 	if err != nil {
 		return err
 	}
-	checks := res.CheckDescriptors(ws.Catalog)
+	// Writing into the catalog root replaces the descriptors being overwritten;
+	// writing elsewhere leaves every loaded entity in place.
+	var checks []catalog.Diagnostic
+	if sameDir(root, ws.Root) {
+		checks = res.CheckDescriptors(ws.Catalog)
+	} else {
+		checks = res.CheckDescriptorsAlongside(ws.Catalog)
+	}
 	if *format == "json" {
 		return a.printJSON(map[string]any{
 			"template": t.Name, "values": res.Values, "outputDir": res.OutputDir,
@@ -194,4 +202,27 @@ func collectValues(t *scaffold.Template, file string, sets []string) (map[string
 		values[k] = cv
 	}
 	return values, nil
+}
+
+// sameDir reports whether two paths name the same directory (after resolving
+// symlinks when possible), so scaffold checks know whether the rendered
+// descriptors replace files of the loaded catalog.
+func sameDir(a, b string) bool {
+	ra, rb := resolveDir(a), resolveDir(b)
+	if ra == rb {
+		return true
+	}
+	ia, errA := os.Stat(ra)
+	ib, errB := os.Stat(rb)
+	return errA == nil && errB == nil && os.SameFile(ia, ib)
+}
+
+func resolveDir(p string) string {
+	if abs, err := filepath.Abs(p); err == nil {
+		p = abs
+	}
+	if r, err := filepath.EvalSymlinks(p); err == nil {
+		return r
+	}
+	return filepath.Clean(p)
 }
