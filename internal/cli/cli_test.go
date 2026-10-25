@@ -168,6 +168,48 @@ func TestScaffoldApplyAndConflict(t *testing.T) {
 	}
 }
 
+func TestScaffoldForceUpdatesExistingService(t *testing.T) {
+	root := t.TempDir()
+	if err := os.CopyFS(root, os.DirFS(fixtureRoot)); err != nil {
+		t.Fatal(err)
+	}
+	args := []string{"--root=" + root, "scaffold", "run", "go-service",
+		"--set", "name=ledger-service", "--set", "description=Regenerated double-entry ledger.", "--set", "owner=team-payments"}
+	// The dry run diffs against the existing service without flagging the
+	// descriptor it replaces as a duplicate of itself.
+	code, out, errOut := run(t, append(args, "--dry-run")...)
+	if code != ExitOK || strings.Contains(out, "check:") || !strings.Contains(out, "update    services/ledger-service/catalog-info.yaml") {
+		t.Fatalf("dry run: %d\n%s\n%s", code, out, errOut)
+	}
+	// Without --force the differing files conflict; with it they are written.
+	if code, _, errOut = run(t, args...); code != ExitError || !strings.Contains(errOut, "refusing to overwrite") {
+		t.Fatalf("conflict: %d %s", code, errOut)
+	}
+	// --target spelled differently but naming the catalog root still replaces.
+	code, out, errOut = run(t, append(args, "--force", "--target", root+string(filepath.Separator)+".")...)
+	if code != ExitOK || !strings.Contains(out, "wrote ") {
+		t.Fatalf("force: %d\n%s\n%s", code, out, errOut)
+	}
+	b, err := os.ReadFile(filepath.Join(root, "services", "ledger-service", "catalog-info.yaml"))
+	if err != nil || !strings.Contains(string(b), "Regenerated double-entry ledger.") {
+		t.Fatalf("descriptor not overwritten: %v\n%s", err, b)
+	}
+	code, out, _ = run(t, "--root="+root, "catalog", "get", "ledger-service")
+	if code != ExitOK || !strings.Contains(out, "Regenerated double-entry ledger.") {
+		t.Fatalf("reloaded catalog: %d\n%s", code, out)
+	}
+	// A second forced run is a no-op.
+	code, out, _ = run(t, append(args, "--force")...)
+	if code != ExitOK || !strings.Contains(out, "wrote 0 files") {
+		t.Fatalf("idempotent force: %d\n%s", code, out)
+	}
+	// Written into a different target, the same name duplicates the loaded entity.
+	code, out, errOut = run(t, append(args, "--dry-run", "--target", t.TempDir())...)
+	if code != ExitFindings || !strings.Contains(out, "[duplicate-entity]") {
+		t.Fatalf("alongside: %d\n%s\n%s", code, out, errOut)
+	}
+}
+
 func TestValidateStrictAndJSONShape(t *testing.T) {
 	dir := t.TempDir()
 	if err := os.WriteFile(filepath.Join(dir, "catalog-info.yaml"),

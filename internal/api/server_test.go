@@ -204,6 +204,15 @@ func TestEndpoints(t *testing.T) {
 					t.Errorf("checks = %v", checks)
 				}
 			}},
+		{"POST", "/api/v1/templates/go-service/dry-run",
+			`{"values": {"name": "ledger-service", "description": "Regenerated double-entry ledger.", "owner": "team-payments"}}`, 200,
+			func(t *testing.T, m map[string]any, _ string) {
+				// Diffing an existing service replaces its descriptor: no self-duplicate.
+				updates, _ := m["summary"].(map[string]any)["update"].(float64)
+				if updates == 0 || len(m["checks"].([]any)) != 0 {
+					t.Errorf("existing-service dry-run = %v", m)
+				}
+			}},
 		{"POST", "/api/v1/templates/go-service/dry-run", `{"values": {"name": "X"}}`, 422, func(t *testing.T, m map[string]any, _ string) {
 			e := m["error"].(map[string]any)
 			if e["code"] != "invalid_parameters" || len(e["details"].([]any)) != 3 {

@@ -184,19 +184,38 @@ func TestCheckDescriptorsFindsUnknownOwner(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	codesOf := func(ds []catalog.Diagnostic) string {
+		var codes []string
+		for _, d := range ds {
+			codes = append(codes, d.Code)
+		}
+		return strings.Join(codes, ",")
+	}
+	// A name already declared in a different descriptor is a real duplicate.
 	res, err := Render(loadTemplate(t, "go-service"), map[string]any{
-		"name": "ledger-service", "description": "Collides with an existing entity.", "owner": "team-ghost",
+		"name": "payments-sdk", "description": "Collides with an existing entity.", "owner": "team-ghost",
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	var codes []string
-	for _, d := range res.CheckDescriptors(cat) {
-		codes = append(codes, d.Code)
-	}
-	if strings.Join(codes, ",") != "duplicate-entity" {
+	if got := codesOf(res.CheckDescriptors(cat)); got != "duplicate-entity" {
 		// The duplicate is rejected before its references are resolved.
-		t.Fatalf("codes = %v", codes)
+		t.Fatalf("codes = %v", got)
+	}
+	// Re-rendering an existing service overwrites its descriptor, so the old
+	// declaration is replaced, not duplicated; its references are still checked.
+	res, err = Render(loadTemplate(t, "go-service"), map[string]any{
+		"name": "ledger-service", "description": "Replaces the existing descriptor.", "owner": "team-ghost",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := codesOf(res.CheckDescriptors(cat)); got != "dangling-ref" {
+		t.Fatalf("replacing codes = %v", got)
+	}
+	// Written alongside (another target root), the same file is a duplicate.
+	if got := codesOf(res.CheckDescriptorsAlongside(cat)); got != "duplicate-entity" {
+		t.Fatalf("alongside codes = %v", got)
 	}
 	res, err = Render(loadTemplate(t, "go-service"), map[string]any{
 		"name": "new-svc", "description": "Owner does not exist yet.", "owner": "team-ghost",
@@ -250,6 +269,15 @@ func TestDryRunPlanAgainstFixture(t *testing.T) {
 	}
 	if len(plan.Conflicts()) != 4 {
 		t.Fatalf("conflicts = %v", plan.Conflicts())
+	}
+	// Diffing against an existing service must not report the service's own
+	// current descriptor as a duplicate of the one replacing it.
+	cat, err := catalog.Load(fixtureRoot, catalog.LoadOptions{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ds := res.CheckDescriptors(cat); len(ds) != 0 {
+		t.Fatalf("checks = %v", ds)
 	}
 }
 
