@@ -210,8 +210,8 @@ func runServe(a *app, args []string) error {
 	if _, err := parse(fs, args); err != nil {
 		return err
 	}
-	if a.logLevel == "warn" {
-		a.logLevel = "info" // a server should log requests by default
+	if a.logLevel == "" {
+		a.logLevel = "info" // a server logs requests unless told otherwise
 	}
 	srv, err := api.New(a.root, a.log())
 	if err != nil {

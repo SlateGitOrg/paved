@@ -164,11 +164,8 @@ func (a *app) registerGlobal(fs *flag.FlagSet) {
 	if a.root == "" {
 		a.root = def
 	}
-	if a.logLevel == "" {
-		a.logLevel = "warn"
-	}
 	fs.StringVar(&a.root, "root", a.root, "catalog root directory")
-	fs.StringVar(&a.logLevel, "log-level", a.logLevel, "log level: debug|info|warn|error")
+	fs.StringVar(&a.logLevel, "log-level", a.logLevel, "log level: debug|info|warn|error (default warn; info for serve)")
 }
 
 // newFlags returns a sub-command flag set that also accepts the global flags.
@@ -199,9 +196,11 @@ func (a *app) log() *slog.Logger {
 	if a.logger != nil {
 		return a.logger
 	}
-	var lvl slog.Level
-	if err := lvl.UnmarshalText([]byte(a.logLevel)); err != nil {
-		lvl = slog.LevelWarn
+	lvl := slog.LevelWarn
+	if a.logLevel != "" {
+		if err := lvl.UnmarshalText([]byte(a.logLevel)); err != nil {
+			lvl = slog.LevelWarn
+		}
 	}
 	a.logger = slog.New(slog.NewTextHandler(a.stderr, &slog.HandlerOptions{Level: lvl}))
 	return a.logger
