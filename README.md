@@ -245,7 +245,7 @@ internal/facts        repo facts, manifests, registry   internal/version   versi
 internal/scorecard    rule DSL, evaluation, rollup      internal/schema    JSON Schema subset
 internal/workspace    root + config wiring              internal/api, cli  REST API and commands
 fixtures/             acme-monorepo sample catalog      scripts/           demo and coverage gate
-docs/                 architecture notes                DECISIONS.md       design rulings
+docs/                 architecture notes                DECISIONS.md       design decisions
 ```
 
 ## Roadmap
